@@ -1,0 +1,253 @@
+---
+title: swift5.0读后感
+---
+
+# Objective-C与Swift的异同、适用场景及优缺点
+
+- 从语言上讲，Swift 比 Objective-C 更简单，但是简单是对于有编程基础的人来讲，它的语法更清楚，简洁，很多程序员看到了真是爱不释手。
+- OC之前的积累的很多类库，在Swift中大部分依然可以直接使用，当然，Swift3之后，一些语法改变了很多，不过还是有迹可循的。OC出现过的绝大多数概念，比如引用计数、ARC、属性、协议、接口、初始化、扩展类、命名参数、block等，在Swift中继续有效（可能最多换个术语）。Swift大多数概念与OC一样。当然Swift也多出了一些新兴概念，这些在OC中是没有的，比如泛型、元组。
+
+### Swift优点
+- swift类型安全、OC  注重灵活 ，Swift5.0以后ABI稳定
+- swift注重值类型（Enum、Struct）、OC注重指针引用
+- swift容易阅读，文件结构和大部分语法简易化，只有.swift文件，结尾不需要分号
+- swift中的可选类型，是用于所有数据类型，而不仅仅局限于类。相比于OC中的nil更加安全和简明
+- swift中各种方便快捷的[高阶函数]（函数式编程）（Swift的标准数组支持三个高阶函数：map，filter和reduce,以及map的扩展flatMap）
+- swift新增了两种权限，细化权限。open > public > internal(默认)> fileprivate > private
+- swift中独有的元组类型(tuples)，把多个值组合成复合值。元组内的值可以是任何类型，并不要求是相同类型的
+- swift支持函数式编程，Objc本身是不支持的，需要通过引入ReactiveCocoa这个库才可支持函数式编程。
+
+### 缺点
+- 社区的开源项目偏少，毕竟OC独大好多年，很多优秀的类库都不支持Swift，不过这种状况正在改变，现在有好多优秀的Swift的开源类库了
+- 对于不支持Swift的一些第三方类库，如果非得使用，只能混合编程，利用桥接文件实现
+
+# Swift 语法
+### 声明常量和变量
+```
+let maximumNumberOfLoginAttempts = 10
+var currentLoginAttempt = 0
+var x = 0.0, y = 0.0, z = 0.0
+//类型注解
+var welcomeMessage: String
+let π = 3.14159
+let 你好 = "你好世界"
+let 🐶🐮 = "dogcow"
+//输出常量和变量
+print("HelloWorld")
+
+let b = 10
+var a = 5
+a = b
+
+let singleLineString = "These are the same."
+
+
+var someInts = [Int]()
+print("someInts is of type [Int] with \(someInts.count) items.")
+// 打印“someInts is of type [Int] with 0 items.”
+
+var letters = Set<Character>()
+print("letters is of type Set<Character> with \(letters.count) items.")
+// 打印“letters is of type Set<Character> with 0 items.”
+```
+### 控制流
+```
+let names = ["Anna", "Alex", "Brian", "Jack"]
+for name in names {
+    print("Hello, \(name)!")
+}
+
+while condition {
+    statements
+}
+
+let approximateCount = 62
+let countedThings = "moons orbiting Saturn"
+let naturalCount: String
+switch approximateCount {
+case 0:
+    naturalCount = "no"
+case 1..<5:
+    naturalCount = "a few"
+case 5..<12:
+    naturalCount = "several"
+case 12..<100:
+    naturalCount = "dozens of"
+case 100..<1000:
+    naturalCount = "hundreds of"
+default:
+    naturalCount = "many"
+}
+print("There are \(naturalCount) \(countedThings).")
+// 输出“There are dozens of moons orbiting Saturn.”
+
+
+//值绑定
+let anotherPoint = (2, 0)
+switch anotherPoint {
+case (let x, 0):
+    print("on the x-axis with an x value of \(x)")
+case (0, let y):
+    print("on the y-axis with a y value of \(y)")
+case let (x, y):
+    print("somewhere else at (\(x), \(y))")
+}
+// 输出“on the x-axis with an x value of 2”
+```
+### 函数
+
+```
+//输入输出
+func swapTwoInts(_ a: inout Int, _ b: inout Int) {
+    let temporaryA = a
+    a = b
+    b = temporaryA
+}
+```
+
+### 闭包
+- 闭包是自包含的函数代码块，可以在代码中被传递和使用。Swift 中的闭包与 C 和 Objective-C 中的代码块（blocks）以及其他一些编程语言中的匿名函数（Lambdas）比较相似。
+闭包可以捕获和存储其所在上下文中任意常量和变量的引用。被称为包裹常量和变量。 Swift 会为你管理在捕获过程中涉及到的所有内存操作。
+- 闭包表达式语法
+ ```
+ { (parameters) -> return type in
+    statements
+}
+ ```
+ - 尾随闭包
+  ```
+  func someFunctionThatTakesAClosure(closure: () -> Void) {
+    // 函数体部分
+}
+
+// 以下是不使用尾随闭包进行函数调用
+someFunctionThatTakesAClosure(closure: {
+    // 闭包主体部分
+})
+
+// 以下是使用尾随闭包进行函数调用
+someFunctionThatTakesAClosure() {
+    // 闭包主体部分
+}
+  ```
+
+### 类和结构体
+- 结构体和类作为一种通用而又灵活的结构，成为了人们构建代码的基础。你可以使用定义常量、变量和函数的语法，为你的结构体和类定义属性、添加方法。
+- 与其他编程语言所不同的是，Swift 并不要求你为自定义的结构体和类的接口与实现代码分别创建文件。你只需在单一的文件中定义一个结构体或者类，系统将会自动生成面向其它代码的外部接口。
+
+#### 类型定义的语法
+```
+struct SomeStructure {
+    // 在这里定义结构体
+}
+class SomeClass {
+    // 在这里定义类
+}
+```
+
+### 继承
+
+- 一个类可以继承另一个类的方法，属性和其它特性。当一个类继承其它类时，继承类叫子类，被继承类叫超类（或父类）。在 Swift 中，继承是区分「类」与其它类型的一个基本特征。
+- 在 Swift 中，类可以调用和访问超类的方法、属性和下标，并且可以重写这些方法，属性和下标来优化或修改它们的行为。Swift 会检查你的重写定义在超类中是否有匹配的定义，以此确保你的重写行为是正确的。
+- 可以为类中继承来的属性添加属性观察器，这样一来，当属性值改变时，类就会被通知到。可以为任何属性添加属性观察器，无论它原本被定义为存储型属性还是计算型属性。
+
+```
+class Vehicle {
+    var currentSpeed = 0.0
+    var description: String {
+        return "traveling at \(currentSpeed) miles per hour"
+    }
+    func makeNoise() {
+        // 什么也不做——因为车辆不一定会有噪音
+    }
+}
+
+
+class Bicycle: Vehicle {
+    var hasBasket = false
+}
+```
+
+### 构造过程
+- 构造过程是使用类、结构体或枚举类型的实例之前的准备过程。在新实例使用前有个过程是必须的，它包括设置实例中每个存储属性的初始值和执行其他必须的设置或构造过程。
+- 你要通过定义构造器来实现构造过程，它就像用来创建特定类型新实例的特殊方法。与 Objective-C 中的构造器不同，Swift 的构造器没有返回值。它们的主要任务是保证某种类型的新实例在第一次使用前完成正确的初始化。
+
+```
+
+struct Fahrenheit {
+    var temperature: Double
+    init() {
+        temperature = 32.0
+    }
+}
+var f = Fahrenheit()
+print("The default temperature is \(f.temperature)° Fahrenheit")
+// 打印“The default temperature is 32.0° Fahrenheit”
+
+
+//默认构造器
+class ShoppingListItem {
+    var name: String?
+    var quantity = 1
+    var purchased = false
+}
+var item = ShoppingListItem()
+
+```
+
+### 协议
+
+- 协议 定义了一个蓝图，规定了用来实现某一特定任务或者功能的方法、属性，以及其他需要的东西。类、结构体或枚举都可以遵循协议，并为协议定义的这些要求提供具体实现。某个类型能够满足某个协议的要求，就可以说该类型遵循这个协议。
+- 除了遵循协议的类型必须实现的要求外，还可以对协议进行扩展，通过扩展来实现一部分要求或者实现一些附加功能，这样遵循协议的类型就能够使用这些功能。
+
+#### 协议语法
+```
+protocol SomeProtocol {
+    // 这里是协议的定义部分
+	 var mustBeSettable: Int { get set }
+     var doesNotNeedToBeSettable: Int { get }
+	 static var someTypeProperty: Int { get set }
+
+}
+
+struct SomeStructure: FirstProtocol, AnotherProtocol {
+    // 这里是结构体的定义部分
+}
+class SomeClass: SomeSuperClass, FirstProtocol, AnotherProtocol {
+    // 这里是类的定义部分
+}
+
+```
+
+
+### 内存安全
+- 默认情况下，Swift 会阻止你代码里不安全的行为。例如，Swift 会保证变量在使用之前就完成初始化，在内存被回收之后就无法被访问，并且数组的索引会做越界检查。
+- Swift 也保证同时访问同一块内存时不会冲突，通过约束代码里对于存储地址的写操作，去获取那一块内存的访问独占权。因为 Swift 自动管理内存，所以大部分时候你完全不需要考虑内存访问的事情。然而，理解潜在的冲突也是很重要的，可以避免你写出访问冲突的代码。而如果你的代码确实存在冲突，那在编译时或者运行时就会得到错误。
+
+#### In-Out 参数的访问冲突
+- 长期访问的存在会造成一个结果，你不能在访问以 in-out 形式传入后的原变量，即使作用域原则和访问权限允许——任何访问原变量的行为都会造成冲突。例如：
+```
+var stepSize = 1
+
+func increment(_ number: inout Int) {
+    number += stepSize
+}
+
+increment(&stepSize)
+// 错误：stepSize 访问冲突
+```
+
+### 访问控制
+- 访问控制可以限定其它源文件或模块对你的代码的访问。这个特性可以让你隐藏代码的实现细节，并且能提供一个接口来让别人访问和使用你的代码。
+- 你可以明确地给单个类型（类、结构体、枚举）设置访问级别，也可以给这些类型的属性、方法、构造器、下标等设置访问级别。协议也可以被限定在一定访问级别的范围内使用，包括协议里的全局常量、变量和函数。
+- Swift 不仅提供了多种不同的访问级别，还为某些典型场景提供了默认的访问级别，这样就不需要我们在每段代码中都显式声明访问级别。如果你只是开发一个单 target 的应用程序，完全可以不用显式声明代码的访问级别。
+- 通过修饰符 open、public、internal、fileprivate、private 来声明实体的访问级别：
+
+### 项目应用见 https://github.com/tianmingfu/Swift_MFWeiBo.git
+- 实现微博Aoth2.0登录
+- 实现Swift架构搭建tabbar
+- 实现swiftUI库使用
+- 实现swift图片加载
+- 实现swift网络请求
+- 实现swift自动布局
+- 实现swift JSON 转Model
